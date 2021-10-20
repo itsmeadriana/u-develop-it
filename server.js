@@ -1,19 +1,33 @@
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
+const mysql = require('mysql2');
 
-app.get('/', (req, res) => {
-    res.json({
-        message: 'IS THIS WORKING???'
-    });
+//Express middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+// Connect to database
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        //Your SQL username,
+        user: 'root',
+        // Your MySQL password
+        password: '',
+        database: 'election'
+    },
+    console.group('Connected to the election database.')
+);
+
+db.query(`SELECT * FROM candidates`, (err, rows) => {
+    console.log(rows);
 });
 
+//Catchall for any other request (Not Found)
 app.use((req, res) => {
     res.status(404).end();
 });
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
